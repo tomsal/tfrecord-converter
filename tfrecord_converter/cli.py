@@ -319,6 +319,7 @@ def process_kitti_accumulated(
 @click.option("--chunk-size", default=-1)
 @click.option("--overwrite/--no-overwrite", default=False)
 @click.option("--testset/--no-testset", default=False)
+@click.option("--pseudo-lidar/--no-pseudo-lidar", default=False)
 def process_semantic_kitti(
     kitti_raw_path,
     kitti_odometry_path,
@@ -327,6 +328,7 @@ def process_semantic_kitti(
     chunk_size,
     overwrite,
     testset,
+    pseudo_lidar
 ):
     """ Process KITTI LiDAR labels ('semantic-kitti')
 
@@ -340,11 +342,18 @@ def process_semantic_kitti(
     options = {i: values[i] for i in args}
     write_data_as_yaml(options, str(output / "tf_dataset_flags.txt"))
 
-    from .semantic_kitti_reader import SemanticKittiReader
+    if not pseudo_lidar:
+        from .semantic_kitti_reader import SemanticKittiReader
 
-    reader = SemanticKittiReader(
-        kitti_raw_path, kitti_odometry_path, kitti_semantic_lidar_path, testset=testset
-    )
+        reader = SemanticKittiReader(
+            kitti_raw_path, kitti_odometry_path, kitti_semantic_lidar_path, testset=testset
+        )
+    else:
+        from .semantic_kitti_reader_pseudolidar import SemanticKittiReaderPseudoLidar
+
+        reader = SemanticKittiReaderPseudoLidar(
+            kitti_raw_path, kitti_odometry_path, kitti_semantic_lidar_path, testset=testset
+        )
 
     # write split for reference
     split_file_name = str(output / "split_{}.yaml".format(reader.split["name"]))
