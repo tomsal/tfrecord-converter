@@ -320,6 +320,7 @@ def process_kitti_accumulated(
 @click.option("--overwrite/--no-overwrite", default=False)
 @click.option("--testset/--no-testset", default=False)
 @click.option("--pseudo-lidar/--no-pseudo-lidar", default=False)
+@click.option("--filter-by-elevation-angle/--no-filter-by-elevation-angle", default=False)
 def process_semantic_kitti(
     kitti_raw_path,
     kitti_odometry_path,
@@ -328,7 +329,8 @@ def process_semantic_kitti(
     chunk_size,
     overwrite,
     testset,
-    pseudo_lidar
+    pseudo_lidar,
+    filter_by_elevation_angle
 ):
     """ Process KITTI LiDAR labels ('semantic-kitti')
 
@@ -352,7 +354,9 @@ def process_semantic_kitti(
         from .semantic_kitti_reader_pseudolidar import SemanticKittiReaderPseudoLidar
 
         reader = SemanticKittiReaderPseudoLidar(
-            kitti_raw_path, kitti_odometry_path, kitti_semantic_lidar_path, testset=testset
+            kitti_raw_path, kitti_odometry_path, kitti_semantic_lidar_path, 
+            filter_by_elevation_angle = filter_by_elevation_angle,
+            testset=testset
         )
 
     # write split for reference
